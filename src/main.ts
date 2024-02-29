@@ -64,9 +64,15 @@ async function analyzeCode(
 
   for (const file of parsedDiff) {
     if (file.to === "/dev/null") continue; // Ignore deleted files
+    console.log('File: ');
+    console.log(file.to);
     for (const chunk of file.chunks) {
+      console.log('Creating prompt');
       const prompt = createPrompt(file, chunk, prDetails);
+      console.log(prompt);
       const aiResponse = await getAIResponse(prompt);
+      console.log('aiResponse');
+      console.log('aiResponse');
       if (aiResponse) {
         const newComments = createComment(file, chunk, aiResponse);
         if (newComments) {
@@ -137,7 +143,8 @@ async function getAIResponse(prompt: string): Promise<Array<{
         },
       ],
     });
-
+    console.log('getAIResponse ');
+    console.log(response);
     const res = response.choices[0].message?.content?.trim() || "{}";
     return JSON.parse(res).reviews;
   } catch (error) {
@@ -182,7 +189,12 @@ async function createReviewComment(
 }
 
 async function main() {
+  console.log('Getting PR details');
+
   const prDetails = await getPRDetails();
+
+  console.log(prDetails);
+
   let diff: string | null;
   const eventData = JSON.parse(
     readFileSync(process.env.GITHUB_EVENT_PATH ?? "", "utf8")

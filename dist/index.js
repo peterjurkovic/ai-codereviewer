@@ -91,9 +91,15 @@ function analyzeCode(parsedDiff, prDetails) {
         for (const file of parsedDiff) {
             if (file.to === "/dev/null")
                 continue; // Ignore deleted files
+            console.log('File: ');
+            console.log(file.to);
             for (const chunk of file.chunks) {
+                console.log('Creating prompt');
                 const prompt = createPrompt(file, chunk, prDetails);
+                console.log(prompt);
                 const aiResponse = yield getAIResponse(prompt);
+                console.log('aiResponse');
+                console.log('aiResponse');
                 if (aiResponse) {
                     const newComments = createComment(file, chunk, aiResponse);
                     if (newComments) {
@@ -154,6 +160,8 @@ function getAIResponse(prompt) {
                         content: prompt,
                     },
                 ] }));
+            console.log('getAIResponse ');
+            console.log(response);
             const res = ((_b = (_a = response.choices[0].message) === null || _a === void 0 ? void 0 : _a.content) === null || _b === void 0 ? void 0 : _b.trim()) || "{}";
             return JSON.parse(res).reviews;
         }
@@ -189,7 +197,9 @@ function createReviewComment(owner, repo, pull_number, comments) {
 function main() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        console.log('Getting PR details');
         const prDetails = yield getPRDetails();
+        console.log(prDetails);
         let diff;
         const eventData = JSON.parse((0, fs_1.readFileSync)((_a = process.env.GITHUB_EVENT_PATH) !== null && _a !== void 0 ? _a : "", "utf8"));
         if (eventData.action === "opened") {
